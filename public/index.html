@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-signin-client_id" content="1096106376525-9c19o4qn2l8hrau0433ffsl6tc8keokl.apps.googleusercontent.com">
+    <title>Google Sign In</title>
+</head>
+<body>
+    <h1>Google Sign In</h1>
+    <hr>
+
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    
+    <a href="#" onclick="signOut();">Sign out</a>
+
+    <script>
+        var isDev = window.location.hostname.includes('localhost');
+
+        var url = (isDev 
+            ? 'http://localhost:8082/api/auth/google' 
+            : 'https://prodrigu-rest-node.herokuapp.com/api/auth/google');
+
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+            });
+        }
+
+        function onSignIn(googleUser) {
+             var id_token = googleUser.getAuthResponse().id_token;
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_token })
+            })
+            .then(resp => resp.json())
+            .then(console.log)
+            .catch(console.log);
+        }
+    </script>
+</body>
+</html>
