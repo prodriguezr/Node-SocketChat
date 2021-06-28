@@ -9,7 +9,8 @@ const router = Router();
 router.get('/', RolesCtrl.getRoles);
 
 router.post('/', [
-    check('name', 'Name field is required').not().isEmpty().custom(existsRoleByName),
+    check('name', 'Name field or property is required').not().isEmpty().custom(existsRoleByName),
+    check('isAdmin', 'isAdmin field or property is required or is invalid').not().isEmpty().isIn(['0', '1']),
     validateFields,
 ], RolesCtrl.createRoles);
 

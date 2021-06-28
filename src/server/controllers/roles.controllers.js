@@ -30,9 +30,11 @@ const getRoles = async(req = request, res = response) => {
 
 const createRoles = async(req = request, res = response) => {
     try {
-        const { name } = req.body;
+        const { name, isAdmin } = req.body;
         
-        const role = new Role({ name });
+        //const bIsAdmin = isAdmin === "0" ? false : true; 
+
+        const role = new Role({ name, isAdmin: isAdmin === "0" ? false : true });
 
         await role.save();
         
@@ -41,7 +43,7 @@ const createRoles = async(req = request, res = response) => {
             data: role,
         });
     } catch (err) {
-        console.log(err);
+        console.log(`${new Date().getTime()} - ${err}`);
         
         res.status(500).json({
             msg: "Error in Create Role (POST) method",

@@ -5,6 +5,10 @@ const RoleSchema = Schema({
         type: String,
         required: [true, 'Name is required'],
     },
+    isAdmin: {
+        type: Boolean,
+        required: [true, 'Indicate if the user is an administrator']
+    },
     status: {
         type: Boolean,
         default: true,
