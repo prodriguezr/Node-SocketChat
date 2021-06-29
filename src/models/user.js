@@ -26,13 +26,6 @@ const UserSchema = Schema({
         type: Schema.Types.ObjectId ,
         required: true,
         ref: 'Role'
-
-        // default: 'USER',
-        // enum: {
-        //     values: ['ADMIN', 'USER'],
-        //     message: '{VALUE} is not supported'
-        // }
-      
     },
     status: {
         type: Boolean,

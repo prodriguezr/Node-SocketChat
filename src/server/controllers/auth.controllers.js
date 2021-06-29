@@ -1,7 +1,7 @@
 const { request, response } = require('express');
 const bcryptjs = require('bcryptjs');
 
-const { User } = require('../../models');
+const { User, Role } = require('../../models');
 const { generateJWT } = require('../../helpers/jwt/utils');
 const { googleVerify } = require('../../helpers/google-verify');
 
@@ -53,12 +53,18 @@ const googleSignIn = async(req = request, res = response) => {
     try {        
         const { name, email, img } = await googleVerify(id_token);
 
+        
         let user = await User.findOne({ email });
-
+        
         if (!user) {
+            const role = await Role.findOne({ name: 'user' });
+
+            console.log({ role });
+
             const data = {
                 name,
                 email,
+                role: role._id,
                 img,
                 password: ':',
                 google: true
@@ -76,22 +82,35 @@ const googleSignIn = async(req = request, res = response) => {
         }
 
         const token = await generateJWT(user.id);
-
+        
         res.status(200).json({
             status: 200,
             data: { token },
-         });
+        });
     } catch (err) {
         console.log(err);
-
+        
         res.status(400).json({
             status: 400,
             msg: 'Invalid Google token',
-         });
+        });
     }
+}
+
+const renewJWT = async(req, res = response) => {
+    const { user } = req;
+    
+    const token = await generateJWT(user.id);
+    
+    return res.status(200).json({
+        status: 200,
+        user,
+        token,
+    });
 }
 
 module.exports = {
     googleSignIn,
     login,
+    renewJWT,
 }

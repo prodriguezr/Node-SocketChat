@@ -15,7 +15,7 @@ const isAdminRole = async(req = request, res = response, next) => {
 
     const role = await Role.findById(roleId);
 
-    if (role.name.toUpperCase() !== "ADMIN") {
+    if (!role.isAdmin) {
         return res.status(401).json({
             status: 401,
             msg: `'The user ${name} does not have the required role`
