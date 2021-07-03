@@ -4,13 +4,19 @@ const cors = require('cors');
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const morgan = require('morgan');
+const { createServer } = require('http');
 
 const { dbConnection } = require('../db/db-connection');
+const Socket = require('socket.io');
+const { socketController } = require('./controllers/socket.controllers');
 const { validateJSON } = require('../middlewares');
 class Server {
     constructor() {
         this.app = express();
         this.port = process.env.PORT;
+        this.server = createServer(this.app);
+        this.io = Socket(this.server);
+        
         this.routesPath = 
         {
             auth:  '/api/auth',
@@ -29,6 +35,9 @@ class Server {
 
         // Routes in the app        
         this.routes();
+
+        // Create sockets
+        this.sockets();
     }
 
     async db() {
@@ -74,8 +83,12 @@ class Server {
         this.app.use(this.routesPath.users, Users);
     }
 
+    sockets() {
+        this.io.on('connection', (socket) => socketController(socket, this.io));
+    }
+
     listen() {
-        this.app.listen(this.port, () => {
+        this.server.listen(this.port, () => {
             console.log(`Server listening at http://localhost:${this.port}`)
         });
     }
